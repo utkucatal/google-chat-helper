@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Chat Helper</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 280px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .header p {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #f8f9fa;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      transition: background 0.2s ease;
+    }
+
+    .setting-item:hover {
+      background: #f0f1f3;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .setting-description {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 30px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .open-settings {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .open-settings:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .open-settings:active {
+      transform: translateY(0);
+    }
+
+    .status {
+      text-align: center;
+      font-size: 11px;
+      color: #28a745;
+      margin-top: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 4px 0;
+    }
+
+    .status.show {
+      opacity: 1;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      color: #aaa;
+      padding: 8px 0 12px 0;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>⚙️ Google Chat Helper</h1>
+    <p>Quick Settings</p>
+  </div>
+
+  <div class="content">
+    <div class="setting-item">
+      <div class="setting-info">
+        <div class="setting-title">Image Viewer</div>
+        <div class="setting-description">Modal and download button</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="imageViewerToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="status" id="statusMessage">✅ Saved</div>
+
+    <div class="footer">v1.0.0</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
