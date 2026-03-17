@@ -77,9 +77,17 @@
       return src;
     }
 
-    // Remove Google's image resize parameters to get full quality
-    let originalSrc = src;
+    // Handle Google Chat attachment FIFE URLs specifically
+    // These URLs have the format: chat.google.com/u/.../api/get_attachment_url?url_type=FIFE_URL&...&sz=wXXX-hYYY-rw&...
+    // The generic regex below corrupts the sz parameter, so handle these first
+    if (src.includes('chat.google.com') && src.includes('get_attachment_url')) {
+      // Replace sz parameter with s0 (original size) or remove it to get full quality
+      src = src.replace(/([?&]sz=)[^&]*/g, '$1s0');
+      log('FIFE attachment URL (original size):', src);
+      return src;
+    }
 
+    // Remove Google's image resize parameters to get full quality
     // Remove parameters like =w500-h400, =w500, etc.
     src = src.replace(/=[wh]\d+-?[wh]?\d*/g, '');
     src = src.replace(/=s\d+/g, ''); // Remove =s[size] parameter
@@ -201,21 +209,28 @@
       img.src.includes('emoji') ||
       img.src.includes('photo.jpg') ||
       img.src.includes('/photo/') ||
-      img.src.includes('avatar')
+      img.src.includes('avatar') ||
+      img.src.includes('fonts.gstatic.com') ||
+      img.src.includes('gstatic.com/s/e/')
     )) {
       return true;
     }
 
     // Check class names
     const className = img.className || '';
-    if (className.includes('emoji') || className.includes('avatar')) {
+    if (className.includes('emoji') || className.includes('avatar') || className.includes('iiJ4W')) {
       return true;
     }
 
-    // Check parent elements
+    // Check parent elements — emoji picker containers
     if (img.closest('[data-emoji]') ||
         img.closest('.emoji') ||
-        img.closest('.avatar')) {
+        img.closest('.avatar') ||
+        img.closest('.tPmVof') ||       // Emoji picker root
+        img.closest('.yy4GJf') ||       // Emoji picker inner
+        img.closest('[role="menu"]') ||  // Emoji menu list
+        img.closest('[role="menuitem"]') // Individual emoji item
+    ) {
       return true;
     }
 
@@ -322,6 +337,12 @@
   function attachImageListener(img) {
     if (img.dataset.gchatListenerAttached) return; // Already attached
 
+    // Skip emojis and avatars before attaching anything
+    if (isEmojiOrAvatar(img)) {
+      img.dataset.gchatListenerAttached = 'true'; // Mark as handled so we don't re-check
+      return;
+    }
+
     img.dataset.gchatListenerAttached = 'true';
 
     // Add download button (will check for emoji/avatar internally)
@@ -343,7 +364,7 @@
         const isProfilePhoto = img.src?.includes('photo.jpg') ||
                               img.classList.contains('avatar');
 
-        if (isLogo || isTinyEmoji || isProfilePhoto) {
+        if (isLogo || isTinyEmoji || isProfilePhoto || isEmojiOrAvatar(img)) {
           log('Filtered out:', { isLogo, isTinyEmoji, isProfilePhoto });
           return;
         }
@@ -408,7 +429,7 @@
       const isTinyEmoji = (width > 0 && width < 30) || (height > 0 && height < 30);
       const isProfilePhoto = img.src?.includes('photo.jpg') || img.src?.includes('/photo/');
 
-      if (isLogo || isTinyEmoji || isProfilePhoto) {
+      if (isLogo || isTinyEmoji || isProfilePhoto || isEmojiOrAvatar(img)) {
         return;
       }
 
